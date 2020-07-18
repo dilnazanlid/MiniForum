@@ -3,12 +3,15 @@
 @section('title')Posts @endsection
 
 @section('content')
-  <div class="h-auto flex bg-gray-600  text-center justify-center" style="background-image: url('https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80'); background-size: 100% 100%;">
-    <div class="flex flex-col">
-
+  @if(sizeof($data)==0)
+    <div class="h-screen flex flex-col bg-gray-600 text-center" style="background-image: url('https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80'); background-size: 100% 100%;">
+  @else
+    <div class="h-auto flex bg-gray-600 text-center justify-center" style="background-image: url('https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80'); background-size: 100% 100%;">
+  @endif
+  <div class="flex flex-col">
 
     <!-- filter button -->
-      <div class="flex container mt-5 ml-8">
+      <div class="flex justify-left mt-5 ml-8">
         <button type="button" name="filter" id="filter" class="px-4 py-4 bg-gray-600 rounded-full focus:outline-none">
           <img src="https://img.icons8.com/android/24/000000/filter.png" class="w-6 h-6"/>
         </button>
@@ -57,36 +60,37 @@
 
       <!-- posts section -->
       @if(sizeof($data)==0)
-        <div class="flex justify-center items-center my-4">
-          <h1 class="font-bold text-2xl text-white">No results found</h1>
+      <div class="flex flex-col justify-center">
+        <h1 class="font-bold text-2xl text-white">No results found</h1>
+      </div>
+      @else
+        <div class="flex flex-col justify-center items-center">
+          @foreach($data as $value)
+            <div data-postid="{{ $value->id }}" class="lg:w-2/3 w-4/5 mx-8 my-4 bg-gray-600 rounded-md border-2 border-gray-900 px-3 py-6 text-center text-white text-left">
+              <a href="{{ route('one_post', $value->id) }}"><h1 class="text-xl font-bold">{{ $value->title }}</h1></a>
+              <div class="text-sm text-black my-2" >
+                Posted by {{ $value->user->username }} on {{ $value->created_at->format('d.m.Y') }} at {{ $value->created_at->format('H:i') }}
+              </div>
+              <hr>
+              <p class="mt-2 text-left h-64" style="white-space: pre-line;  overflow: hidden; text-overflow: ellipsis;">{{ $value->body }}</p>
+              <div class="text-sm mt-2 flex flex-row">
+                @if(Cookie::get('auth')!==null)
+                  <a href="#" class="like mx-2" onclick="likeFunction({{$value->id}}, 0)">@include('includes.like')</a>
+                @else
+                  @include('includes.like')
+                @endif
+                <p class="countLikes{{$value->id}} font-bold px-2"> {{ DB::table('likes')->where('post_id', $value->id)->where('like', 1)->count() }} </p>
+                @if(Cookie::get('auth')!==null)
+                  <a href="#" class="like mx-2" onclick="likeFunction({{$value->id}}, 1)">@include('includes.dislike')</a>
+                @else
+                  @include('includes.dislike')
+                @endif
+                  <p class="countDislikes{{$value->id}} font-bold px-2"> {{ DB::table('likes')->where('post_id', $value->id)->where('like', 0)->count() }} </p>
+              </div>
+            </div>
+          @endforeach
         </div>
       @endif
-      <div class="flex flex-col justify-center items-center">
-        @foreach($data as $value)
-          <div data-postid="{{ $value->id }}" class="lg:w-2/3 w-4/5 mx-8 my-4 bg-gray-600 rounded-md border-2 border-gray-900 px-3 py-6 text-center text-white text-left">
-            <a href="{{ route('one_post', $value->id) }}"><h1 class="text-xl font-bold">{{ $value->title }}</h1></a>
-            <div class="text-sm text-black my-2" >
-              Posted by {{ $value->user->username }} on {{ $value->created_at->format('d.m.Y') }} at {{ $value->created_at->format('H:i') }}
-            </div>
-            <hr>
-            <p class="mt-2 text-left h-64" style="white-space: pre-line;  overflow: hidden; text-overflow: ellipsis;">{{ $value->body }}</p>
-            <div class="text-sm mt-2 flex flex-row">
-              @if(Cookie::get('auth')!==null)
-                <a href="#" class="like mx-2" onclick="likeFunction({{$value->id}}, 0)">@include('includes.like')</a>
-              @else
-                @include('includes.like')
-              @endif
-              <p class="countLikes{{$value->id}} font-bold px-2"> {{ DB::table('likes')->where('post_id', $value->id)->where('like', 1)->count() }} </p>
-              @if(Cookie::get('auth')!==null)
-                <a href="#" class="like mx-2" onclick="likeFunction({{$value->id}}, 1)">@include('includes.dislike')</a>
-              @else
-                @include('includes.dislike')
-              @endif
-                <p class="countDislikes{{$value->id}} font-bold px-2"> {{ DB::table('likes')->where('post_id', $value->id)->where('like', 0)->count() }} </p>
-            </div>
-          </div>
-        @endforeach
-      </div>
     </div>
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
