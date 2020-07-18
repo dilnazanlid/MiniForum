@@ -34,3 +34,5 @@ Route::get('/posts', 'PostController@getAllPosts')->name('all_posts');
 Route::get('/post/{id}', 'PostController@getOnePosts')->name('one_post');
 
 Route::post('/like', 'PostController@likePost')->name('like');
+
+Route::post('/cat', 'PostController@addCat')->name('add_category');

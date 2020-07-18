@@ -35,6 +35,13 @@
             </div>
           </div>
         </form>
+        <form class="" action="{{ route('add_category') }}" method="post">
+          @csrf
+          <label for="category" class="mx-4 mr-8">Add new category:
+            <input type="text" name="category" id="category" required class="focus:outline-none shadow appearance-none border-2 rounded-md my-2 py-2 px-3 w-auto text-gray-700 leading-tight focus:border-gray-500" autocomplete="off"><br>
+          </label>
+          <input type="submit" name="post" id="post" value="Add" class="focus:outline-none shadow text-black bg-gray-500 hover:bg-gray-900 hover:text-white transition duration-500 ease-in-out font-bold order-2 rounded-md my-2 py-2 px-3 w-32 bg-gray-200">
+        </form>
       </div>
     </div>
   </div>
