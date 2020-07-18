@@ -76,13 +76,11 @@
               <div class="text-sm mt-2 flex flex-row">
                 @if(Cookie::get('auth')!==null)
                   <a class="like mx-2" onclick="likeFunction({{$value->id}}, 0)">@include('includes.like')</a>
-                  <a class="like mx-2" onclick="likeFunction({{$value->id}}, 0)">@include('includes.like')</a>
                 @else
                   @include('includes.like')
                 @endif
                 <p class="countLikes{{$value->id}} font-bold px-2"> {{ DB::table('likes')->where('post_id', $value->id)->where('like', 1)->count() }} </p>
                 @if(Cookie::get('auth')!==null)
-                  <a class="like mx-2" onclick="likeFunction({{$value->id}}, 1)">@include('includes.dislike')</a>
                   <a class="like mx-2" onclick="likeFunction({{$value->id}}, 1)">@include('includes.dislike')</a>
                 @else
                   @include('includes.dislike')
