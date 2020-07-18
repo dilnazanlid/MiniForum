@@ -15,13 +15,6 @@ class PostController extends Controller
 {
     use checkTrait;
 
-    public function addCat(Request $request){
-      $cat = new Category();
-      $cat->category = $request['category'];
-      $cat->save();
-      return redirect()->route('dashboard');
-    }
-
     public function dashboardShow(){
       $cat = Category::all();
       return view('dashboard', ['category' => $cat]);
