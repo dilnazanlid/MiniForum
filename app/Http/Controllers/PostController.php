@@ -22,26 +22,23 @@ class PostController extends Controller
 
     public function addNewPost(Request $request){
 
-      $post = new Post();
-      $post->title = $request['title'];
-      $post->body = $request['body'];
-      $post->likeCount = 0;
-      $post->dislikeCount = 0;
+      $arrayToPass = [
+        'title' => $request['title'],
+        'body' => $request['body'],
+        'user_id' => $request->user()->id,
+      ];
+      $post = Post::create($arrayToPass);
+
       $categories = $request->has('category') ? $request->input('category') : [];
-      $success = $request->user()->posts()->save($post);
       foreach ($categories as $value) {
         $data = array('post_id'=> $post->id, "category_id"=>$value);
         DB::table('post_categories')->insert($data);
       }
 
-      if($success){
-        return redirect()->route('dashboard')->with(['success' => 'Post was successfully uploaded!']);
-      }
-      return redirect()->route('dashboard')->with(['failed' => 'Something went wrong, try again!']);
+      return redirect()->route('dashboard')->with(['success' => 'Post was successfully uploaded!']);
     }
 
     public function getAllPosts(Request $request){
-
       $criteria = $request->has('criteria') ? $request->input('criteria') : null;
       $categories = $request->has('category') ? $request->input('category') : [];
       $cats = Category::all();
@@ -70,17 +67,50 @@ class PostController extends Controller
         $posts = $posts->orderBy('created_at', 'desc')->distinct();
       }
 
-      return view('allposts', ['data' => $posts->get(), 'cats' => $cats, 'inputCats' => $categories]);
+      $likes = [];
+      $dislikes = [];
+      $userlikes = [];
+      $posts = $posts->get();
+
+      foreach($posts as $post){
+        $likes[$post->id] = $post->likeCount;
+        $dislikes[$post->id] = $post->dislikeCount;
+        $like = Like::where('post_id', $post->id)->where('user_id', $request->user()->id);
+        if($like->count()==1){
+          $userlikes[$post->id] = $like->first()->like;
+        }else{
+          $userlikes[$post->id] = -1;
+        }
+      }
+      return view('allposts', ['data' => $posts,
+                                'cats' => $cats,
+                                'inputCats' => $categories,
+                                'likes' => $likes,
+                                'dislikes' => $dislikes,
+                                'userlikes' => $userlikes]);
     }
 
-    public function getOnePosts($id){
-      $post = Post::where('id', $id)->first();
+    public function getOnePosts(Post $post){
 
       $categories = Category::leftJoin('post_categories', 'categories.id', '=', 'post_categories.category_id')
                       ->select('categories.*')
-                      ->where('post_categories.post_id', $id)->get();
-      //dd($categories->toArray());
-      return view('onepost', ['value' => $post, 'categories' => $categories]);
+                      ->where('post_categories.post_id', $post->id)->get();
+
+      $likes = $post->likeCount;
+      $dislikes = $post->dislikeCount;
+      
+      $like = Like::where('post_id', $post->id)->where('user_id', Auth::id());
+      $userlikes[$post->id] = ($like->count() == 1) ? $like->first()->like : -1;
+
+      return view('onepost', ['value' => $post,
+                              'categories' => $categories,
+                              'like' => $likes,
+                              'dislike' => $dislikes,
+                              'userlikes' => $userlikes]);
+    }
+
+    public function userLiked(){
+
     }
 
     public function likePost(Request $request){

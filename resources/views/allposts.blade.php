@@ -79,13 +79,13 @@
                 @else
                   @include('includes.like')
                 @endif
-                <p class="countLikes{{$value->id}} font-bold px-2"> {{ DB::table('likes')->where('post_id', $value->id)->where('like', 1)->count() }} </p>
+                <p class="countLikes{{$value->id}} font-bold px-2"> {{ $likes[$value->id] }} </p>
                 @if(Cookie::get('auth')!==null)
                   <a class="like mx-2" onclick="likeFunction({{$value->id}}, 1)">@include('includes.dislike')</a>
                 @else
                   @include('includes.dislike')
                 @endif
-                  <p class="countDislikes{{$value->id}} font-bold px-2"> {{ DB::table('likes')->where('post_id', $value->id)->where('like', 0)->count() }} </p>
+                  <p class="countDislikes{{$value->id}} font-bold px-2"> {{ $dislikes[$value->id] }} </p>
               </div>
             </div>
           @endforeach

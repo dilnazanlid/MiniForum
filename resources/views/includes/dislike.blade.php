@@ -12,23 +12,32 @@
   400 -846 837 -406 456 -573 625 -806 812 -262 211 -605 382 -885 442 -121 26 -529 25 -805 -2 -115 -11 -281 -19 -390 -19 -226 -1 -300 12 -628 105 -246 71
   -393 103 -529 118 -111 13 -364 12 -518 0z"/></g></svg>
   @if(Cookie::get('auth')!==null)
-    @if(Auth::user()->likes()->where('post_id', $value->id)->first())
-      @if( Auth::user()->likes()->where('post_id', $value->id)->first()->like == 0)
+    @if($userlikes[$value->id]==-1)
+      <style>
+        .dislikebutton{{$value->id}}{
+          fill: black;
+        }
+        .likebutton{{$value->id}}{
+          fill: black;
+        }
+      </style>
+    @else
+      @if($userlikes[$value->id]==1)
         <style>
           .dislikebutton{{$value->id}}{
-            fill: red;
+            fill: black;
           }
           .likebutton{{$value->id}}{
-            fill: black;
+            fill: red;
           }
         </style>
       @else
         <style>
           .dislikebutton{{$value->id}}{
-            fill: black;
+            fill: red;
           }
           .likebutton{{$value->id}}{
-            fill: red;
+            fill: black;
           }
         </style>
       @endif

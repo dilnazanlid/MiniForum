@@ -11,7 +11,10 @@ class Post extends Model
     public function user(){
       return $this->belongsTo('App\User');
     }
-    public function likes(){
+    public function like(){
       return $this->belongsTo('App\Like');
     }
+
+    protected $fillable = ['title', 'body', 'user_id'];
+
 }

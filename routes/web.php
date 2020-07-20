@@ -31,6 +31,6 @@ Route::post('/newpost', 'PostController@addNewPost')->name('new_post');
 
 Route::get('/posts', 'PostController@getAllPosts')->name('all_posts');
 
-Route::get('/post/{id}', 'PostController@getOnePosts')->name('one_post');
+Route::get('/post/{post}', 'PostController@getOnePosts')->name('one_post');
 
 Route::post('/like', 'PostController@likePost')->name('like');
